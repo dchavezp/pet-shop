@@ -8,6 +8,9 @@ import { EnvironmentConfigModule } from './infrastructure/config/environment-con
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { ExceptionsModule } from './infrastructure/exceptions/exceptions.module';
 import { RepositoriesModule } from './infrastructure/repositories/repositories.module';
+import { Cloudinary } from './infrastructure/cloudinary/cloudinary.provider';
+import { CloudinaryService } from './infrastructure/cloudinary/cloudinary.service';
+import { CloudinaryModule } from './infrastructure/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -20,8 +23,9 @@ import { RepositoriesModule } from './infrastructure/repositories/repositories.m
     LoggerModule,
     ExceptionsModule,
     RepositoriesModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, Cloudinary, CloudinaryService],
 })
 export class AppModule {}

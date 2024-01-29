@@ -10,59 +10,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  refresh_token String? @db.Text
+  access_token  String? @db.Text
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id       String    @id @default(cuid())
-  name     String
-  email    String    @unique
-  role     Role      @default(CLIENT)
-  Sessioin Session[]
-  Account  Account[]
+  id      String   @id @default(cuid())
+  name    String
+  email   String   @unique
+  role    Role     @default(CLIENT)
+  Order   Order[]
+  Session Session?
 }
 
-model ProductImage {
-  id        String  @id @default(cuid())
+model PetProductImage {
+  id        String     @id @default(cuid())
   pathImage String
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   PetProduct @relation(fields: [productId], references: [id])
 }
 
-model Product {
-  id           String         @id @default(cuid())
+model PetProduct {
+  id           String            @id @default(cuid())
   title        String
-  decription   String
+  description  String
   stock        Int
-  precio       Float
+  price        Decimal           @db.Decimal(10, 2)
   categoryId   String
-  category     Category       @relation(fields: [categoryId], references: [id])
-  ProductImage ProductImage[]
+  isActive     Boolean           @default(true)
+  category     Category          @relation(fields: [categoryId], references: [id])
+  ProductImage PetProductImage[]
+  ProductOrder PetProductOrder[]
+}
+
+model PetProductOrder {
+  id            String     @id @default(cuid())
+  productId     String
+  orderId       String
+  quantity      Int
+  customPetName String?
+  product       PetProduct @relation(fields: [productId], references: [id])
+  order         Order      @relation(fields: [orderId], references: [id])
+}
+
+model Order {
+  id              String            @id @default(cuid())
+  customerId      String
+  customer        User              @relation(fields: [customerId], references: [id])
+  createAt        DateTime?         @default(now())
+  updatedAt       DateTime?         @updatedAt
+  amount          Decimal           @db.Decimal(10, 2)
+  status          Status            @default(PENDING)
+  PetProductOrder PetProductOrder[]
 }
 
 model Category {
-  id      String    @id @default(cuid())
+  id      String       @id @default(cuid())
   name    String
-  Product Product[]
+  Product PetProduct[]
 }
 
 enum Role {
-  ADMIN
   MANAGER
   CLIENT
+}
+
+enum Status {
+  PENDING
+  ACCEPTED
+  SENDING
+  DELIVERED
+  CANCELLED
 }

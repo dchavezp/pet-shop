@@ -1,29 +1,36 @@
-import { DatabaseConfig } from '@/domain/database.interface';
+import { ClodinaryConfig } from '@/domain/config/cloudinary.interface';
+import { DatabaseConfig } from '@/domain/config/database.interface';
+import { JWTConfig } from '@/domain/config/jwt.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class EnvironmentConfigService implements DatabaseConfig {
+export class EnvironmentConfigService
+  implements DatabaseConfig, JWTConfig, ClodinaryConfig
+{
   constructor(private configService: ConfigService) {}
-  getDatabaseHost(): string {
-    return this.configService.get<string>('DATABASE_HOST');
+  getDatabaseURL(): string {
+    return this.configService.get('DATABASE_URL');
   }
-  getDatabasePort(): number {
-    return this.configService.get<number>('DATABASE_PORT');
+  getCloudinaryCloudName(): string {
+    return this.configService.get<string>('CLOUDINARY_NAME');
   }
-  getDatabaseUser(): string {
-    return this.configService.get<string>('DATABASE_USER');
+  getCloudinaryApiKey(): string {
+    return this.configService.get<string>('CLOUDINARY_API_KEY');
   }
-  getDatabasePassword(): string {
-    return this.configService.get<string>('DATABASE_PASSWORD');
+  getCloudinaryApiSecret(): string {
+    return this.configService.get<string>('CLOUDINARY_API_SECRET');
   }
-  getDatabaseName(): string {
-    return this.configService.get<string>('DATABASE_NAME');
+  getJwtSecret(): string {
+    return this.configService.get<string>('JWT_SECRET');
   }
-  getDatabaseSchema(): string {
-    return this.configService.get<string>('DATABASE_SCHEMA');
+  getJwtExpirationTime(): string {
+    return this.configService.get<string>('JWT_EXPIRATION_TIME');
   }
-  getDatabaseSync(): boolean {
-    return this.configService.get<boolean>('DATABASE_SYNCHRONIZE');
+  getJwtRefreshSecret(): string {
+    return this.configService.get<string>('JWT_REFRESH_SECRET');
+  }
+  getJwtRefreshExpirationTime(): string {
+    return this.configService.get<string>('JWT_REFRESH_EXPIRATION_TIME');
   }
 }
